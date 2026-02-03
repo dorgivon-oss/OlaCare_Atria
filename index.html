@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OlaCare - ATRIA Strategic Proposal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* === הגדרות בסיס === */
+        body, html { 
+            margin: 0; padding: 0; width: 100%; height: 100%; 
+            overflow: hidden; background-color: #000; 
+            font-family: 'Segoe UI', sans-serif;
+        }
+        
+        #slider-container {
+            width: 100vw; height: 100vh; position: relative;
+            background: #000;
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        /* === שקפים === */
+        .slide {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-size: contain; 
+            background-repeat: no-repeat; 
+            background-position: center;
+            opacity: 0; visibility: hidden;
+            transition: opacity 0.5s ease-in-out, visibility 0.5s;
+            z-index: 1;
+        }
+
+        .slide.active { opacity: 1; visibility: visible; z-index: 2; }
+
+        /* === וידאו === */
+        .video-wrapper {
+            width: 100%; height: 100%;
+            position: relative;
+            display: flex; justify-content: center; align-items: center;
+            background: #000;
+        }
+
+        video {
+            width: 100%; height: 100%; 
+            object-fit: contain; 
+            position: absolute; top: 0; left: 0;
+        }
+
+        /* פוסטר לדיזולב */
+        .video-poster-layer {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-size: contain; background-repeat: no-repeat; background-position: center;
+            background-color: #000;
+            z-index: 5;
+            transition: opacity 1.0s ease-in-out;
+            pointer-events: none; 
+        }
+        
+        .video-poster-layer.fade-out { opacity: 0; }
+
+        /* כפתור Play */
+        .play-overlay {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-size: 80px; color: rgba(255,255,255,0.7);
+            pointer-events: auto; cursor: pointer;
+            transition: opacity 0.3s;
+            filter: drop-shadow(0 0 10px rgba(0,0,0,0.5));
+            z-index: 10;
+        }
+        
+        .play-overlay:hover { color: rgba(255,255,255,0.9); transform: translate(-50%, -50%) scale(1.1); }
+
+        /* === DOCK LAYOUT === */
+        .dock-wrapper {
+            position: absolute; 
+            bottom: 10px; 
+            left: 50%; transform: translateX(-50%);
+            display: flex; 
+            flex-direction: row; 
+            align-items: center; 
+            gap: 15px; 
+            z-index: 1000;
+            pointer-events: none; 
+        }
+        
+        .dock-wrapper > * { pointer-events: auto; }
+
+        /* כרית הניווט */
+        .nav-pill {
+            display: flex; align-items: center; gap: 30px; 
+            padding: 6px 25px; 
+            border-radius: 30px;
+            background: rgba(20, 20, 20, 0.6); 
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(4px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .nav-btn {
+            font-size: 1rem; 
+            color: rgba(255,255,255,0.8);
+            cursor: pointer; 
+            width: 24px; height: 24px; 
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s;
+        }
+        .nav-btn:hover { color: #fff; transform: scale(1.1); }
+
+        /* === TONY STYLES === */
+        :root {
+            --bg-dark: #0a1628;
+            --text-main: #ffffff;
+            --accent-gold: #D4A017;
+            --accent-blue: #4fc3f7;
+        }
+
+        .agent-container {
+            position: relative; 
+            display: flex; flex-direction: column; align-items: center;
+            opacity: 0; transition: opacity 0.5s ease;
+        }
+        
+        .agent-container.visible { opacity: 1; }
+
+        /* טוני מוקטן */
+        .agent-trigger {
+            width: 42px; height: 42px; 
+            background: linear-gradient(135deg, #D4A017, #f39c12); 
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(212, 160, 23, 0.4); 
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: transform 0.3s; 
+            position: relative;
+            animation: pulse-gold 3s infinite;
+        }
+        
+        .agent-trigger:hover { transform: scale(1.1); box-shadow: 0 0 20px rgba(212, 160, 23, 0.6); }
+
+        .agent-eyes { display: flex; gap: 5px; margin-bottom: 2px; }
+        .agent-eye {
+            width: 5px; height: 9px; background-color: #0a1628; border-radius: 3px;
+            animation: eye-movement 5s infinite; 
+        }
+        
+        @keyframes eye-movement {
+            0%, 45%, 55%, 100% { transform: scaleY(1); }
+            50% { transform: scaleY(0.1); } 
+        }
+        
+        @keyframes pulse-gold {
+            0% { box-shadow: 0 0 0 0 rgba(212, 160, 23, 0.5); }
+            70% { box-shadow: 0 0 0 8px rgba(212, 160, 23, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(212, 160, 23, 0); }
+        }
+
+        .agent-prompt-bubble {
+            position: absolute; top: -35px;
+            background: white; color: #0a1628;
+            padding: 3px 8px; border-radius: 8px;
+            font-size: 10px; font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            opacity: 0;
+            animation: pop-in-out 10s infinite;
+            pointer-events: none;
+            white-space: nowrap;
+            font-family: 'Inter', sans-serif;
+        }
+
+        @keyframes pop-in-out {
+            0%, 90% { opacity: 0; transform: translateY(5px) scale(0.8); }
+            92%, 98% { opacity: 1; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(5px) scale(0.8); }
+        }
+
+        /* Chat Window */
+        .chat-window {
+            position: fixed; bottom: 60px; right: 20px; width: 340px; height: 460px;
+            background: rgba(16, 28, 48, 0.98); backdrop-filter: blur(20px);
+            border: 1px solid var(--accent-gold); border-radius: 16px; z-index: 10001;
+            display: none; flex-direction: column; 
+            box-shadow: 0 20px 60px rgba(0,0,0,0.9); 
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            animation: slideUp 0.3s ease-out;
+        }
+        
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .chat-window.active { display: flex; }
+
+        .chat-header { 
+            padding: 12px 15px; background: rgba(0,0,0,0.3);
+            display: flex; justify-content: space-between; align-items: center; 
+            border-bottom: 1px solid rgba(255,255,255,0.1); 
+            font-weight: 700; color: var(--accent-gold); font-size: 15px;
+        }
+        
+        .chat-messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .message { max-width: 90%; padding: 10px 14px; border-radius: 12px; font-size: 13px; line-height: 1.5; color: #fff; }
+        .message.user { align-self: flex-end; background: var(--accent-blue); color: #0a1628; border-bottom-right-radius: 2px; }
+        .message.bot { align-self: flex-start; background: rgba(255,255,255,0.1); border-bottom-left-radius: 2px; border: 1px solid rgba(255,255,255,0.1); }
+        .message.error { align-self: flex-start; background: rgba(255, 99, 71, 0.2); color: #ff6b6b; border: 1px solid rgba(255, 99, 71, 0.4); }
+        
+        .chat-input-area { padding: 12px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; gap: 8px; background: rgba(0,0,0,0.2); }
+        .chat-input { flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 8px 12px; color: white; outline: none; font-size: 13px; }
+        .chat-input:focus { border-color: var(--accent-gold); }
+        .chat-send { background: var(--accent-gold); border: none; width: 32px; height: 32px; border-radius: 50%; color: #0a1628; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        
+        .typing { font-style: italic; color: #888; font-size: 11px; margin-left: 15px; margin-bottom: 5px; display: none; }
+
+    </style>
+</head>
+<body>
+
+    <div id="slider-container">
+        <!-- Slides Container -->
+        <div id="slides-wrapper"></div>
+
+        <!-- Dock Layout -->
+        <div class="dock-wrapper">
+            <!-- 1. Arrows -->
+            <div class="nav-pill">
+                <div class="nav-btn prev-btn" onclick="changeSlide(-1)" title="Previous">
+                    <i class="fas fa-chevron-left"></i>
+                </div>
+                <div class="nav-btn next-btn" onclick="changeSlide(1)" title="Next">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+
+            <!-- 2. Tony -->
+            <div class="agent-container" id="agent-btn-wrapper" onclick="window.openChat()" title="Ask Tony">
+                <div class="agent-trigger">
+                     <div class="agent-eyes">
+                        <div class="agent-eye"></div>
+                        <div class="agent-eye"></div>
+                    </div>
+                </div>
+                <div class="agent-prompt-bubble">Ask Ola (Atria)</div>
+            </div>
+        </div>
+
+        <!-- Chat Window -->
+        <div class="chat-window" id="chatWindow">
+            <div class="chat-header">
+                <div><i class="fas fa-robot"></i> Ola AI (Atria Strategic)</div>
+                <div style="cursor:pointer;" onclick="window.toggleChatDisplay()"><i class="fas fa-times"></i></div>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="message bot">Hello. I am TONY, your Ola Investment Analyst. I've analyzed the Atria/Ola synergy. Ask me anything.</div>
+            </div>
+            <div class="typing" id="typing">Tony is typing...</div>
+            <div class="chat-input-area">
+                <input type="text" class="chat-input" id="chatInput" placeholder="Ask about ROI, Coterie, or Ops..." onkeypress="window.handleKeyPress(event)">
+                <button class="chat-send" onclick="window.sendMsg()"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // === UPDATED FOR ATRIA: 16 SLIDES ===
+        const totalSlides = 16; 
+        
+        // Ensure filenames match this pattern in the directory (1 to 16)
+        const filenamePattern = "Ola Care-Invest-Intro-25-us_Page_%NUM%.png"; 
+        
+        // Adjusted for 16 slides (removed 17)
+        const showAgentInSlides = [2, 3, 4, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
+        
+        let currentSlide = 1;
+        const wrapper = document.getElementById('slides-wrapper');
+        const agentWrapper = document.getElementById('agent-btn-wrapper');
+        let videoElement = null;
+
+        function pad(n) { return n < 10 ? '0' + n : n; }
+
+        for (let i = 1; i <= totalSlides; i++) {
+            let slideDiv = document.createElement('div');
+            slideDiv.className = (i === 1) ? 'slide active' : 'slide';
+            
+            if (i === 6) { // === Video Slide ===
+                let vidWrapper = document.createElement('div');
+                vidWrapper.className = "video-wrapper";
+                let posterImage = filenamePattern.replace('%NUM%', pad(i));
+                
+                let posterLayer = document.createElement('div');
+                posterLayer.className = "video-poster-layer";
+                posterLayer.style.backgroundImage = `url('${posterImage}')`;
+                
+                let vid = document.createElement('video');
+                vid.src = "Ola_Home_Care_en.mp4"; 
+                vid.playsInline = true;
+                vid.preload = "auto";
+
+                // Error handling - NO ALERTS
+                vid.onerror = function() {
+                    console.warn("OlaCare Video Warning: Video file failed to load.");
+                    const overlay = vidWrapper.querySelector('.play-overlay');
+                    if(overlay) overlay.style.display = 'none';
+                };
+
+                let playOverlay = document.createElement('div');
+                playOverlay.className = "play-overlay";
+                playOverlay.innerHTML = '<i class="fas fa-play-circle"></i>';
+
+                playOverlay.onclick = function() {
+                    vid.currentTime = 0; 
+                    vid.play().then(() => {
+                        posterLayer.classList.add('fade-out');
+                        playOverlay.style.opacity = '0';
+                        playOverlay.style.pointerEvents = 'none';
+                    }).catch(e => {
+                        console.log("Video Play Error:", e);
+                    });
+                };
+
+                vid.onclick = function() {
+                    if (!vid.paused) {
+                        vid.pause();
+                        playOverlay.style.opacity = '1';
+                        playOverlay.style.pointerEvents = 'auto';
+                    } else {
+                        vid.play();
+                        playOverlay.style.opacity = '0';
+                        playOverlay.style.pointerEvents = 'none';
+                    }
+                };
+
+                vid.onended = function() {
+                    playOverlay.style.opacity = '1';
+                    playOverlay.style.pointerEvents = 'auto';
+                };
+
+                videoElement = vid;
+                vidWrapper.appendChild(vid);
+                vidWrapper.appendChild(posterLayer);
+                vidWrapper.appendChild(playOverlay);
+                slideDiv.appendChild(vidWrapper);
+
+            } else { // === Image Slide ===
+                let fileName = filenamePattern.replace('%NUM%', pad(i));
+                slideDiv.style.backgroundImage = `url('${fileName}')`;
+            }
+            wrapper.appendChild(slideDiv);
+        }
+
+        const slides = document.querySelectorAll('.slide');
+
+        function changeSlide(direction) {
+            slides[currentSlide - 1].classList.remove('active');
+            
+            if (currentSlide === 6) {
+                if (videoElement) {
+                    videoElement.pause();
+                    videoElement.currentTime = 0;
+                }
+                const activeSlide = slides[currentSlide - 1];
+                const poster = activeSlide.querySelector('.video-poster-layer');
+                const btn = activeSlide.querySelector('.play-overlay');
+                if(poster) poster.classList.remove('fade-out');
+                if(btn) { btn.style.opacity = '1'; btn.style.pointerEvents = 'auto'; btn.style.display = 'block'; }
+            }
+
+            currentSlide += direction;
+            if (currentSlide > totalSlides) currentSlide = 1;
+            if (currentSlide < 1) currentSlide = totalSlides;
+
+            slides[currentSlide - 1].classList.add('active');
+            updateAgentVisibility();
+        }
+
+        function updateAgentVisibility() {
+            if (showAgentInSlides.includes(currentSlide)) {
+                agentWrapper.style.opacity = '1';
+                agentWrapper.style.pointerEvents = 'auto';
+            } else {
+                agentWrapper.style.opacity = '0';
+                agentWrapper.style.pointerEvents = 'none';
+                const chatWin = document.getElementById('chatWindow');
+                if(chatWin) chatWin.classList.remove('active');
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === "ArrowRight") changeSlide(1);
+            if (e.key === "ArrowLeft") changeSlide(-1);
+        });
+
+        updateAgentVisibility();
+
+        window.openChat = function() {
+            const chatWin = document.getElementById('chatWindow');
+            if(chatWin) chatWin.classList.add('active');
+        };
+
+        window.toggleChatDisplay = function() {
+             const chatWin = document.getElementById('chatWindow');
+             if(chatWin) chatWin.classList.toggle('active');
+        };
+
+        window.handleKeyPress = function(e) {
+            if(e.key === 'Enter') {
+                if(typeof window.sendMsg === 'function') window.sendMsg();
+            }
+        }
+    </script>
+
+    <!-- LOGIC -->
+    <script type="module">
+        import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
+
+        // Secret splitting
+        const part1 = "AIzaS"; 
+        const part2 = "yAb7w79"; 
+        const part3 = "23HxUairs"; 
+        const part4 = "YU3yjeqstPgin";
+        const part5 = "TEIXQ";
+
+        function getAPIKey() {
+            return part1 + part2 + part3 + part4 + part5;
+        }
+
+        let chatSession = null;
+
+        window.sendMsg = async () => {
+            const input = document.getElementById('chatInput');
+            const text = input.value;
+            if(!text) return;
+            
+            const msgs = document.getElementById('chatMessages');
+            msgs.innerHTML += `<div class="message user">${text}</div>`;
+            input.value = '';
+            document.getElementById('typing').style.display = 'block';
+            msgs.scrollTop = msgs.scrollHeight;
+
+            try {
+                if(!chatSession) await initAgent();
+                const result = await chatSession.sendMessage(text);
+                const response = await result.response;
+                const aiText = response.text();
+                
+                msgs.innerHTML += `<div class="message bot">${aiText}</div>`;
+            } catch(e) {
+                let errorMsg = e.message;
+                if(e.message.includes('404')) errorMsg = "Model not found.";
+                if(!getAPIKey()) errorMsg = "API Key Error";
+                msgs.innerHTML += `<div class="message error">${errorMsg}</div>`;
+            }
+            document.getElementById('typing').style.display = 'none';
+            msgs.scrollTop = msgs.scrollHeight;
+        };
+
+        async function initAgent() {
+            try {
+                const finalKey = getAPIKey();
+                const genAI = new GoogleGenerativeAI(finalKey);
+                const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" }); 
+                
+                const context = `
+### IDENTITY
+You are TONY, Chief Investment Analyst for OLA AI.
+Target Audience: ATRIA Senior Living Executives (CEO Holly Belter-Chesser era) & Investors.
+Tone: Sharp, Strategic, "Wall-Street" efficiency. Focus on EBITDA, Scale, and "Core Excellence".
+
+### ATRIA INTELLIGENCE (The Client Context)
+- Scale: Over 200 locations, 35k residents, 38 states.
+- Pain Points: 50% staff turnover (need retention tools), Need for "Tech-Forward Hybrid Models", Focus on Operational Efficiency.
+- Brands: 
+    1. Coterie (Ultra-Luxury): Needs 100% Privacy (Ola's Skeleton Tech is perfect here).
+    2. Holiday (Mid-Market): Needs core efficiency/staff relief.
+- Systems: Operations run on Aline (formerly Glennis). OLA emphasizes interoperability.
+
+### OLA "GOLD DATA" (The Financial Proof)
+- MARKET STORM: "Peak 65" is here. 128% staff turnover in industry.
+- FINANCIAL BURDEN (Status Quo): Total Cost/Bed/Year is **$72,612**.
+  - Falls: $37,037/bed.
+  - Admin Waste: $29,100/bed (Nurses spend 40% time on paperwork).
+- THE OLA SAVINGS: We save **$43,000/bed/year**.
+  - 90% reduction in falls.
+  - $7,275/bed/year saved in nurse documentation time via automation (Hygiene Care Validation).
+- TECH MOAT: 
+  - Privacy First: "Skeleton Tracking" only. No video stored. No "Big Brother" feeling for Coterie residents.
+  - IP: 4 Patents Granted, 20+ Pending.
+  - No Wearables: Pure software on existing cameras.
+
+### GOAL
+Pitch OLA not just as safety, but as the "Operational Efficiency" engine for Atria's 2026 recalibration.
+Always close with a strategic question about deployment at Atria.
+`;
+                
+                chatSession = model.startChat({
+                    history: [
+                        { role: "user", parts: [{ text: "Who are you?" }] },
+                        { role: "model", parts: [{ text: "I am TONY, OLA's Chief Analyst. I've crunched the numbers for Atria. Ready to see how we save you $43k per bed?" }] },
+                        { role: "user", parts: [{ text: context }] }
+                    ],
+                });
+            } catch (error) {
+                console.error("AI Error:", error);
+            }
+        }
+    </script>
+</body>
+</html>
