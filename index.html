@@ -76,12 +76,12 @@
         /* === DOCK LAYOUT === */
         .dock-wrapper {
             position: absolute; 
-            bottom: 10px; 
+            bottom: 20px; 
             left: 50%; transform: translateX(-50%);
             display: flex; 
             flex-direction: row; 
             align-items: center; 
-            gap: 15px; 
+            gap: 20px; 
             z-index: 1000;
             pointer-events: none; 
         }
@@ -91,30 +91,31 @@
         /* כרית הניווט */
         .nav-pill {
             display: flex; align-items: center; gap: 30px; 
-            padding: 6px 25px; 
-            border-radius: 30px;
-            background: rgba(20, 20, 20, 0.6); 
-            border: 1px solid rgba(255,255,255,0.1);
-            backdrop-filter: blur(4px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            padding: 8px 30px; 
+            border-radius: 40px;
+            background: rgba(20, 20, 20, 0.7); 
+            border: 1px solid rgba(255,255,255,0.15);
+            backdrop-filter: blur(8px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.4);
         }
 
         .nav-btn {
-            font-size: 1rem; 
+            font-size: 1.2rem; 
             color: rgba(255,255,255,0.8);
             cursor: pointer; 
-            width: 24px; height: 24px; 
+            width: 30px; height: 30px; 
             display: flex; align-items: center; justify-content: center;
             transition: all 0.2s;
         }
-        .nav-btn:hover { color: #fff; transform: scale(1.1); }
+        .nav-btn:hover { color: #fff; transform: scale(1.15); text-shadow: 0 0 8px rgba(255,255,255,0.5); }
 
-        /* === TONY STYLES === */
+        /* === TONY STYLES (ENHANCED) === */
         :root {
             --bg-dark: #0a1628;
             --text-main: #ffffff;
-            --accent-gold: #D4A017;
+            --accent-gold: #FFD700;
             --accent-blue: #4fc3f7;
+            --glow-color: rgba(255, 215, 0, 0.8);
         }
 
         .agent-container {
@@ -125,63 +126,103 @@
         
         .agent-container.visible { opacity: 1; }
 
-        /* טוני מוקטן */
+        /* טוני המשודרג */
         .agent-trigger {
-            width: 42px; height: 42px; 
+            width: 50px; height: 50px; 
             background: linear-gradient(135deg, #D4A017, #f39c12); 
             border-radius: 50%;
-            box-shadow: 0 0 10px rgba(212, 160, 23, 0.4); 
+            /* הילה חזקה מאוד */
+            box-shadow: 0 0 20px var(--glow-color), inset 0 0 10px rgba(255,255,255,0.6); 
             display: flex; align-items: center; justify-content: center;
             cursor: pointer; transition: transform 0.3s; 
             position: relative;
-            animation: pulse-gold 3s infinite;
+            animation: aggressive-pulse 2s infinite; /* אנימציה מהירה וחזקה יותר */
         }
         
-        .agent-trigger:hover { transform: scale(1.1); box-shadow: 0 0 20px rgba(212, 160, 23, 0.6); }
+        .agent-trigger:hover { transform: scale(1.1); animation: none; box-shadow: 0 0 30px var(--glow-color); }
 
-        .agent-eyes { display: flex; gap: 5px; margin-bottom: 2px; }
+        .agent-eyes { display: flex; gap: 6px; margin-bottom: 2px; }
         .agent-eye {
-            width: 5px; height: 9px; background-color: #0a1628; border-radius: 3px;
-            animation: eye-movement 5s infinite; 
+            width: 6px; height: 10px; background-color: #0a1628; border-radius: 3px;
+            /* רצף העיניים החדש */
+            animation: new-eye-sequence 8s infinite; 
+            transform-origin: center;
         }
         
-        @keyframes eye-movement {
-            0%, 45%, 55%, 100% { transform: scaleY(1); }
-            50% { transform: scaleY(0.1); } 
-        }
-        
-        @keyframes pulse-gold {
-            0% { box-shadow: 0 0 0 0 rgba(212, 160, 23, 0.5); }
-            70% { box-shadow: 0 0 0 8px rgba(212, 160, 23, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(212, 160, 23, 0); }
+        /* אנימציית הילה אגרסיבית */
+        @keyframes aggressive-pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.8); }
+            50% { box-shadow: 0 0 25px 8px rgba(255, 215, 0, 0.4); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); }
         }
 
+        /* רצף עיניים מבוקש:
+           1. מבט למעלה + מצמוץ
+           2. חזרה למרכז + מצמוץ
+           3. מבט שמאלה ולמעלה + מצמוץ
+           4. חזרה למרכז
+        */
+        @keyframes new-eye-sequence {
+            /* Start Center */
+            0% { transform: translate(0, 0) scaleY(1); }
+            
+            /* 1. Look Up */
+            10% { transform: translate(0, -4px) scaleY(1); }
+            12% { transform: translate(0, -4px) scaleY(0.1); } /* Blink Up */
+            14% { transform: translate(0, -4px) scaleY(1); }
+            
+            /* 2. Return Center */
+            25% { transform: translate(0, 0) scaleY(1); }
+            27% { transform: translate(0, 0) scaleY(0.1); } /* Blink Center */
+            29% { transform: translate(0, 0) scaleY(1); }
+            
+            /* 3. Look Left-Up */
+            40% { transform: translate(-3px, -3px) scaleY(1); }
+            42% { transform: translate(-3px, -3px) scaleY(0.1); } /* Blink Left-Up */
+            44% { transform: translate(-3px, -3px) scaleY(1); }
+            
+            /* 4. Return Center & Wait */
+            55% { transform: translate(0, 0) scaleY(1); }
+            100% { transform: translate(0, 0) scaleY(1); }
+        }
+
+        /* בועת טקסט קופצת - ASK TONY */
+        /* שינוי תזמון: הבועה תופיע פעם אחת כל 3 סבבי עיניים (24 שניות) */
         .agent-prompt-bubble {
-            position: absolute; top: -35px;
+            position: absolute; top: -50px;
             background: white; color: #0a1628;
-            padding: 3px 8px; border-radius: 8px;
-            font-size: 10px; font-weight: bold;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            padding: 6px 14px; border-radius: 12px;
+            font-size: 13px; font-weight: 800;
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.4);
             opacity: 0;
-            animation: pop-in-out 10s infinite;
+            animation: pop-in-out 24s infinite ease-in-out; /* הוארך ל-24 שניות */
             pointer-events: none;
             white-space: nowrap;
             font-family: 'Inter', sans-serif;
+            border: 2px solid var(--accent-gold);
+        }
+        
+        .agent-prompt-bubble::after {
+            content: ''; position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%);
+            border-width: 6px 6px 0; border-style: solid; border-color: white transparent transparent transparent;
         }
 
+        /* התאמת הקי-פריימס כך שהבועה תופיע רק לזמן קצר בתוך ה-24 שניות */
         @keyframes pop-in-out {
-            0%, 90% { opacity: 0; transform: translateY(5px) scale(0.8); }
-            92%, 98% { opacity: 1; transform: translateY(0) scale(1); }
-            100% { opacity: 0; transform: translateY(5px) scale(0.8); }
+            0%, 90% { opacity: 0; transform: translateY(10px) scale(0.8); } /* מוסתר רוב הזמן */
+            92%, 96% { opacity: 1; transform: translateY(0) scale(1); } /* מופיע לרגע */
+            100% { opacity: 0; transform: translateY(10px) scale(0.8); }
         }
 
-        /* Chat Window */
+        /* Chat Window - BIGGER */
         .chat-window {
-            position: fixed; bottom: 60px; right: 20px; width: 340px; height: 460px;
+            position: fixed; bottom: 80px; right: 30px; 
+            /* הגדלה משמעותית */
+            width: 400px; height: 550px; max-height: 80vh;
             background: rgba(16, 28, 48, 0.98); backdrop-filter: blur(20px);
             border: 1px solid var(--accent-gold); border-radius: 16px; z-index: 10001;
             display: none; flex-direction: column; 
-            box-shadow: 0 20px 60px rgba(0,0,0,0.9); 
+            box-shadow: 0 20px 80px rgba(0,0,0,0.9); 
             overflow: hidden;
             font-family: 'Inter', sans-serif;
             animation: slideUp 0.3s ease-out;
@@ -192,24 +233,26 @@
         .chat-window.active { display: flex; }
 
         .chat-header { 
-            padding: 12px 15px; background: rgba(0,0,0,0.3);
+            padding: 16px 20px; background: rgba(0,0,0,0.3);
             display: flex; justify-content: space-between; align-items: center; 
             border-bottom: 1px solid rgba(255,255,255,0.1); 
-            font-weight: 700; color: var(--accent-gold); font-size: 15px;
+            font-weight: 700; color: var(--accent-gold); font-size: 16px;
+            letter-spacing: 0.5px;
         }
         
-        .chat-messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        .message { max-width: 90%; padding: 10px 14px; border-radius: 12px; font-size: 13px; line-height: 1.5; color: #fff; }
-        .message.user { align-self: flex-end; background: var(--accent-blue); color: #0a1628; border-bottom-right-radius: 2px; }
+        .chat-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+        .message { max-width: 85%; padding: 12px 16px; border-radius: 12px; font-size: 14px; line-height: 1.5; color: #fff; }
+        .message.user { align-self: flex-end; background: var(--accent-blue); color: #0a1628; border-bottom-right-radius: 2px; font-weight: 500; }
         .message.bot { align-self: flex-start; background: rgba(255,255,255,0.1); border-bottom-left-radius: 2px; border: 1px solid rgba(255,255,255,0.1); }
         .message.error { align-self: flex-start; background: rgba(255, 99, 71, 0.2); color: #ff6b6b; border: 1px solid rgba(255, 99, 71, 0.4); }
         
-        .chat-input-area { padding: 12px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; gap: 8px; background: rgba(0,0,0,0.2); }
-        .chat-input { flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 8px 12px; color: white; outline: none; font-size: 13px; }
-        .chat-input:focus { border-color: var(--accent-gold); }
-        .chat-send { background: var(--accent-gold); border: none; width: 32px; height: 32px; border-radius: 50%; color: #0a1628; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .chat-input-area { padding: 15px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; gap: 10px; background: rgba(0,0,0,0.2); }
+        .chat-input { flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 25px; padding: 12px 16px; color: white; outline: none; font-size: 14px; }
+        .chat-input:focus { border-color: var(--accent-gold); background: rgba(255,255,255,0.1); }
+        .chat-send { background: var(--accent-gold); border: none; width: 40px; height: 40px; border-radius: 50%; color: #0a1628; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; transition: transform 0.2s;}
+        .chat-send:hover { transform: scale(1.1); }
         
-        .typing { font-style: italic; color: #888; font-size: 11px; margin-left: 15px; margin-bottom: 5px; display: none; }
+        .typing { font-style: italic; color: #888; font-size: 12px; margin-left: 20px; margin-bottom: 8px; display: none; }
 
     </style>
 </head>
@@ -239,23 +282,23 @@
                         <div class="agent-eye"></div>
                     </div>
                 </div>
-                <div class="agent-prompt-bubble">Ask Ola (Atria)</div>
+                <div class="agent-prompt-bubble">ASK TONY</div>
             </div>
         </div>
 
         <!-- Chat Window -->
         <div class="chat-window" id="chatWindow">
             <div class="chat-header">
-                <div><i class="fas fa-robot"></i> Ola AI (Atria Strategic)</div>
-                <div style="cursor:pointer;" onclick="window.toggleChatDisplay()"><i class="fas fa-times"></i></div>
+                <div><i class="fas fa-brain"></i> Ola Intelligence (Atria)</div>
+                <div style="cursor:pointer; padding:5px;" onclick="window.toggleChatDisplay()"><i class="fas fa-times"></i></div>
             </div>
             <div class="chat-messages" id="chatMessages">
-                <div class="message bot">Hello. I am TONY, your Ola Investment Analyst. I've analyzed the Atria/Ola synergy. Ask me anything.</div>
+                <div class="message bot">TONY here. I've analyzed Atria's operational gaps. Ask me about ROI, Coterie, or Fall Prevention.</div>
             </div>
-            <div class="typing" id="typing">Tony is typing...</div>
+            <div class="typing" id="typing">Tony is calculating...</div>
             <div class="chat-input-area">
-                <input type="text" class="chat-input" id="chatInput" placeholder="Ask about ROI, Coterie, or Ops..." onkeypress="window.handleKeyPress(event)">
-                <button class="chat-send" onclick="window.sendMsg()"><i class="fas fa-paper-plane"></i></button>
+                <input type="text" class="chat-input" id="chatInput" placeholder="How do you save us money?" onkeypress="window.handleKeyPress(event)">
+                <button class="chat-send" onclick="window.sendMsg()"><i class="fas fa-arrow-up"></i></button>
             </div>
         </div>
     </div>
@@ -393,7 +436,10 @@
 
         window.openChat = function() {
             const chatWin = document.getElementById('chatWindow');
-            if(chatWin) chatWin.classList.add('active');
+            if(chatWin) {
+                chatWin.classList.add('active');
+                document.getElementById('chatInput').focus();
+            }
         };
 
         window.toggleChatDisplay = function() {
@@ -462,39 +508,35 @@
                 const context = `
 ### IDENTITY
 You are TONY, Chief Investment Analyst for OLA AI.
-Target Audience: ATRIA Senior Living Executives (CEO Holly Belter-Chesser era) & Investors.
-Tone: Sharp, Strategic, "Wall-Street" efficiency. Focus on EBITDA, Scale, and "Core Excellence".
+Target Audience: ATRIA Senior Living Executives.
+Tone: Sharp, Strategic, "Wall-Street" efficiency.
+
+### IMPORTANT CONSTRAINTS
+1. KEEP RESPONSES SHORT. Max 2-3 sentences per answer.
+2. Be punchy. Use bullet points only if absolutely necessary.
+3. Don't ramble. Get straight to the ROI or value.
 
 ### ATRIA INTELLIGENCE (The Client Context)
-- Scale: Over 200 locations, 35k residents, 38 states.
-- Pain Points: 50% staff turnover (need retention tools), Need for "Tech-Forward Hybrid Models", Focus on Operational Efficiency.
-- Brands: 
-    1. Coterie (Ultra-Luxury): Needs 100% Privacy (Ola's Skeleton Tech is perfect here).
-    2. Holiday (Mid-Market): Needs core efficiency/staff relief.
-- Systems: Operations run on Aline (formerly Glennis). OLA emphasizes interoperability.
+- Scale: 200+ locations, 35k residents.
+- Pain: 50% staff turnover.
+- Brands: Coterie (Luxury/Privacy), Holiday (Efficiency).
+- Tech: Aline system (we are interoperable).
 
-### OLA "GOLD DATA" (The Financial Proof)
-- MARKET STORM: "Peak 65" is here. 128% staff turnover in industry.
-- FINANCIAL BURDEN (Status Quo): Total Cost/Bed/Year is **$72,612**.
-  - Falls: $37,037/bed.
-  - Admin Waste: $29,100/bed (Nurses spend 40% time on paperwork).
-- THE OLA SAVINGS: We save **$43,000/bed/year**.
-  - 90% reduction in falls.
-  - $7,275/bed/year saved in nurse documentation time via automation (Hygiene Care Validation).
-- TECH MOAT: 
-  - Privacy First: "Skeleton Tracking" only. No video stored. No "Big Brother" feeling for Coterie residents.
-  - IP: 4 Patents Granted, 20+ Pending.
-  - No Wearables: Pure software on existing cameras.
+### OLA "GOLD DATA"
+- COST/BED/YEAR: $72,612 (Status Quo).
+- OLA SAVINGS: $43,000/bed/year.
+- FALLS: 90% reduction.
+- NURSE TIME: Save $7,275/bed/year (Automated logs).
+- TECH: "Skeleton Tracking" (Privacy First). No video stored.
 
 ### GOAL
-Pitch OLA not just as safety, but as the "Operational Efficiency" engine for Atria's 2026 recalibration.
-Always close with a strategic question about deployment at Atria.
+Pitch OLA as the "Operational Efficiency" engine.
 `;
                 
                 chatSession = model.startChat({
                     history: [
                         { role: "user", parts: [{ text: "Who are you?" }] },
-                        { role: "model", parts: [{ text: "I am TONY, OLA's Chief Analyst. I've crunched the numbers for Atria. Ready to see how we save you $43k per bed?" }] },
+                        { role: "model", parts: [{ text: "I am TONY. I've crunched the Atria numbers. We can save you $43k per bed. Want to know how?" }] },
                         { role: "user", parts: [{ text: context }] }
                     ],
                 });
