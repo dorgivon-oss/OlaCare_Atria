@@ -12,8 +12,8 @@
         /* === הגדרות בסיס === */
         body, html { 
             margin: 0; padding: 0; width: 100%; 
-            /* שימוש ב-dvh למובייל למניעת חיתוך */
-            height: 100vh; 
+            height: 100%; 
+            /* גובה דינמי למובייל */
             height: 100dvh; 
             overflow: hidden; background-color: #000; 
             font-family: 'Segoe UI', sans-serif;
@@ -55,7 +55,6 @@
             position: absolute; top: 0; left: 0;
         }
 
-        /* פוסטר לדיזולב */
         .video-poster-layer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background-size: contain; background-repeat: no-repeat; background-position: center;
@@ -67,7 +66,6 @@
         
         .video-poster-layer.fade-out { opacity: 0; }
 
-        /* כפתור Play */
         .play-overlay {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             font-size: 80px; color: rgba(255,255,255,0.7);
@@ -79,26 +77,25 @@
         
         .play-overlay:hover { color: rgba(255,255,255,0.9); transform: translate(-50%, -50%) scale(1.1); }
 
-        /* === DOCK LAYOUT === */
+        /* === DOCK LAYOUT (FIXED POSITION) === */
         .dock-wrapper {
-            position: absolute; 
-            bottom: 20px; 
+            /* שינוי ל-FIXED כדי להצמיד למסך ולא לתוכן */
+            position: fixed; 
+            bottom: 30px; 
             left: 50%; transform: translateX(-50%);
             display: flex; 
             flex-direction: row; 
             align-items: center; 
             gap: 20px; 
-            z-index: 1000;
+            z-index: 9999; /* Z-Index גבוה במיוחד */
             pointer-events: none; 
             width: auto;
             max-width: 95vw;
-            /* מעבר חלק בשינוי גודל */
             transition: bottom 0.3s ease;
         }
         
         .dock-wrapper > * { pointer-events: auto; }
 
-        /* כרית הניווט */
         .nav-pill {
             display: flex; align-items: center; gap: 30px; 
             padding: 8px 30px; 
@@ -215,7 +212,7 @@
             backdrop-filter: blur(20px);
             border: 1px solid var(--accent-gold); 
             border-radius: 16px; 
-            z-index: 10001;
+            z-index: 10002;
             display: none; 
             flex-direction: column; 
             box-shadow: 0 20px 80px rgba(0,0,0,0.9); 
@@ -250,42 +247,42 @@
         
         .typing { font-style: italic; color: #888; font-size: 12px; margin-left: 20px; margin-bottom: 8px; display: none; }
 
-        /* === MOBILE & RESPONSIVE TWEAKS === */
+        /* === MOBILE FIXES (ANDROID SPECIFIC) === */
         @media (max-width: 768px) {
-            /* 1. Chat Window Full Width adjustment */
-            .chat-window {
-                width: 92vw;
-                height: 55vh; /* Slightly smaller to fit keyboard */
-                right: 4vw;
-                /* RAISED to clear the higher dock */
-                bottom: 120px; 
-            }
-
-            /* 2. Dock Optimization - RAISED */
+            /* 1. הרמת ה-Dock בצורה משמעותית */
             .dock-wrapper {
+                position: fixed; /* חשוב מאוד לאנדרואיד */
+                bottom: 15vh;    /* 15% מגובה המסך מלמטה - זה המון, וזה בטוח */
+                /* אופציה חלופית אם ה-vh מזייף: bottom: 120px; */
+                padding-bottom: env(safe-area-inset-bottom);
                 gap: 15px;
-                /* Raised to 50px base + safe area */
-                bottom: 50px; 
-                bottom: calc(50px + env(safe-area-inset-bottom));
-                padding-bottom: 0;
             }
             
+            /* 2. הקטנת הכפתורים למובייל */
             .nav-pill {
+                padding: 6px 20px;
                 gap: 20px;
-                padding: 8px 20px;
             }
 
-            /* 3. Button sizes for touch */
             .nav-btn {
-                width: 40px; height: 40px; font-size: 1.4rem;
+                width: 36px; height: 36px; font-size: 1.2rem;
             }
 
             .agent-trigger {
-                width: 55px; height: 55px; /* Bigger touch target */
+                width: 48px; height: 48px;
             }
 
-            /* 4. Play button */
-            .play-overlay { font-size: 60px; }
+            /* 3. התאמת חלון הצ'אט שלא יעלה על ה-Dock המוגבה */
+            .chat-window {
+                width: 90vw;
+                height: 50vh; 
+                right: 5vw;
+                bottom: 25vh; /* גבוה יותר מה-Dock */
+                z-index: 10005;
+            }
+
+            /* 4. התאמת כפתור Play */
+            .play-overlay { font-size: 50px; }
         }
 
     </style>
