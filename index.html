@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>OlaCare - ATRIA Strategic Proposal</title>
     <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
@@ -11,15 +11,19 @@
     <style>
         /* === הגדרות בסיס === */
         body, html { 
-            margin: 0; padding: 0; width: 100%; height: 100%; 
+            margin: 0; padding: 0; width: 100%; 
+            /* שימוש ב-dvh למובייל למניעת חיתוך */
+            height: 100vh; 
+            height: 100dvh; 
             overflow: hidden; background-color: #000; 
             font-family: 'Segoe UI', sans-serif;
-            /* מניעת גלילה מיותרת במובייל */
             touch-action: manipulation;
         }
         
         #slider-container {
-            width: 100vw; height: 100vh; position: relative;
+            width: 100vw; 
+            height: 100%;
+            position: relative;
             background: #000;
             display: flex; justify-content: center; align-items: center;
         }
@@ -88,6 +92,8 @@
             pointer-events: none; 
             width: auto;
             max-width: 95vw;
+            /* מעבר חלק בשינוי גודל */
+            transition: bottom 0.3s ease;
         }
         
         .dock-wrapper > * { pointer-events: auto; }
@@ -110,7 +116,6 @@
             width: 30px; height: 30px; 
             display: flex; align-items: center; justify-content: center;
             transition: all 0.2s;
-            /* שיפור לחיצה במובייל */
             min-width: 44px; min-height: 44px; 
         }
         .nav-btn:hover { color: #fff; transform: scale(1.15); text-shadow: 0 0 8px rgba(255,255,255,0.5); }
@@ -249,16 +254,20 @@
         @media (max-width: 768px) {
             /* 1. Chat Window Full Width adjustment */
             .chat-window {
-                width: 90vw;
-                height: 60vh;
-                right: 5vw;
-                bottom: 90px; /* Above the dock */
+                width: 92vw;
+                height: 55vh; /* Slightly smaller to fit keyboard */
+                right: 4vw;
+                /* RAISED to clear the higher dock */
+                bottom: 120px; 
             }
 
-            /* 2. Dock Optimization */
+            /* 2. Dock Optimization - RAISED */
             .dock-wrapper {
                 gap: 15px;
-                bottom: 15px;
+                /* Raised to 50px base + safe area */
+                bottom: 50px; 
+                bottom: calc(50px + env(safe-area-inset-bottom));
+                padding-bottom: 0;
             }
             
             .nav-pill {
@@ -268,11 +277,11 @@
 
             /* 3. Button sizes for touch */
             .nav-btn {
-                width: 35px; height: 35px; font-size: 1.4rem;
+                width: 40px; height: 40px; font-size: 1.4rem;
             }
 
             .agent-trigger {
-                width: 45px; height: 45px;
+                width: 55px; height: 55px; /* Bigger touch target */
             }
 
             /* 4. Play button */
